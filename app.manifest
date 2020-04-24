@@ -1,0 +1,53 @@
+{
+  "schemaVersion": "1.0.0",
+  "info": {
+    "title": "Infoblox BloxOne Threat Defense Cloud",
+    "id": {
+      "group": null,
+      "name": "TA-infoblox-botdc",
+      "version": "2.0.0"
+    },
+    "author": [
+      {
+        "name": "Nicolas Jeanselme",
+        "email": null,
+        "company": null
+      }
+    ],
+    "releaseDate": null,
+    "description": "This application allows to:- acquire BloxOne Threat Defense Cloud logs using REST API- filter it efficiently with full drill down support based on the time, threat property, threat class, source IP, domain name, query type- allows to summarize and prioritize hits getting context from Infoblox Dossier threat intelligence.Mandatory requires BloxOne Threat Defense CloudOptionally requires Dossier for threat intelligence",
+    "classification": {
+      "intendedAudience": null,
+      "categories": [],
+      "developmentStatus": null
+    },
+    "commonInformationModels": null,
+    "license": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "privacyPolicy": {
+      "name": null,
+      "text": null,
+      "uri": null
+    },
+    "releaseNotes": {
+      "name": null,
+      "text": null,
+      "uri": null
+    }
+  },
+  "dependencies": {
+  },
+  "tasks": [],
+  "inputGroups": {
+  },
+  "incompatibleApps": {
+  },
+  "platformRequirements": {
+    "splunk": {
+      "Enterprise": "*"
+    }
+  }
+}

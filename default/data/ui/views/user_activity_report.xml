@@ -1,0 +1,211 @@
+<form>
+  <label>User Activity Report</label>
+  <description>BloxOne Threat Defense allows security admins to restrict access to certain types of content (e.g. social media, adult content and other restricted categories) and to review content activity in the organization.</description>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label>Time Period</label>
+      <default>
+        <earliest>-1d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="source" searchWhenChanged="true">
+      <label>Source</label>
+      <choice value="*">All</choice>
+      <prefix>(source="</prefix>
+      <suffix>")</suffix>
+      <fieldForLabel>source</fieldForLabel>
+      <fieldForValue>source</fieldForValue>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by source</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+    <input type="dropdown" token="policy_name" searchWhenChanged="true">
+      <label>Policy</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <prefix>(policy_name="</prefix>
+      <suffix>")</suffix>
+      <initialValue>*</initialValue>
+      <fieldForLabel>policy_name</fieldForLabel>
+      <fieldForValue>policy_name</fieldForValue>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by policy_name</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Top Categories</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (qname=*)
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (policy_name="*")
+            (feed_name="CAT*")
+			| rename feed_name as "Domain Category" 
+            | top limit=10 "Domain Category"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">287</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Blocked Categories</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (qname=*)
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (policy_name="*")
+            (feed_name="CAT*Porn*") OR (feed_name="CAT*Nudity*") OR (feed_name="CAT*Illegal*") OR (feed_name="CAT*Parked*") OR (feed_name="CAT*Malicious*") OR (feed_name="CAT*Anonymiz*") OR (feed_name="CAT*Job*") OR (feed_name="CAT*Weapon*")
+			| rename feed_name as "Domain Category" 
+            | top limit=10 "Domain Category"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">283</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Users by Blocked Category</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (qname=*)
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (policy_name="*")
+            (feed_name="CAT*Porn*") OR (feed_name="CAT*Nudity*") OR (feed_name="CAT*Illegal*") OR (feed_name="CAT*Parked*") OR (feed_name="CAT*Malicious*") OR (feed_name="CAT*Anonymiz*") OR (feed_name="CAT*Job*") OR (feed_name="CAT*Weapon*")
+			| rename feed_name as "Domain Category", device as "Client IP/Name"
+            | top limit=10 "Client IP/Name", "Domain Category"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">373</option>
+        <option name="refresh.display">progressbar</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Blocked Category Matches by Device</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+           (qname=*)
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (policy_name="*")
+            (feed_name="CAT*Porn*") OR (feed_name="CAT*Nudity*") OR (feed_name="CAT*Illegal*") OR (feed_name="CAT*Parked*") OR (feed_name="CAT*Malicious*") OR (feed_name="CAT*Anonymiz*") OR (feed_name="CAT*Job*") OR (feed_name="CAT*Weapon*")
+			| rename qname as "Domain name", category as "Domain Category", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain Category", "Domain name"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+</form>

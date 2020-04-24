@@ -1,0 +1,14 @@
+<nav search_view="search" color="#3c444d">
+<view name="botdc_security" default="true"/>
+<view name="executive_summary_report"/>
+<view name="malicious_activity_report"/>
+<view name="user_activity_report"/>
+<view name="Enrichment_Summary"/>
+<view name="infoblox_dossier_threat_intelligence_results"/>
+<collection label="Troubleshoot">
+	<view name="botdc_event_acquisition_troubleshoot"/>
+	<view name="threat-indicators-enrichment-status"/>
+</collection>
+<view name="inputs"/>
+<view name="configuration"/>
+</nav>

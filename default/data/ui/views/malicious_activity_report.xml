@@ -1,0 +1,822 @@
+<form>
+  <label>Malicious Activity Report</label>
+  <description>This report uses BloxOne Threat Defense to provide visibility into the malicious activities on infected and compromised devices on or off the premises.</description>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label>Time Period</label>
+      <default>
+        <earliest>-1d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="source" searchWhenChanged="true">
+      <label>Source</label>
+      <choice value="*">All</choice>
+      <prefix>(source="</prefix>
+      <suffix>")</suffix>
+      <fieldForLabel>source</fieldForLabel>
+      <fieldForValue>source</fieldForValue>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by source</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Threat Property Report</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*")
+            (tclass="*")
+            (tproperty="*") AND (tproperty!="UNKNOWN")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tproperty as "Threat property"
+            | top limit=20 "Threat property"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Threat Properties</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*")
+            (tclass="*")
+            (tproperty!="UNKNOWN")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tproperty as "Threat property" 
+            | top limit=20 "Threat property"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Threat Property by Device</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*")
+            (tclass="*")
+            (tproperty!="UNKNOWN")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+			|top limit=10 device tproperty</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Top Threat Property by Destinations</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*")
+            (tclass="*")
+            (tproperty!="UNKNOWN")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+			|top limit=10 tproperty qname</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Top Threat Property by Users</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*")
+            (tclass="*")
+            (user!="UNKNOWN")
+            (tproperty!="UNKNOWN")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+			|top limit=10 user tproperty</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Domains by Threat Property and Device</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*")
+            (tclass="*")
+            (tproperty!="UNKNOWN")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            |rename qname as "Domain name"
+            |rename tproperty as "Threat property" 
+            |rename device as "Client IP/Device" 
+            |top limit=20 "Domain name" "Threat property" "Client IP/Device"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Threat Class Report</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class"
+            | top limit=20 "Threat class"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">1</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Threat Classes</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class"
+            | top limit=20 "Threat class"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Threat Class by Device</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+			|top limit=10 device tclass</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Top Threat Class by Destinations</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+			|top limit=10 tclass qname</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+    <panel>
+      <title>Top Threat Class by User</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*") (user!="UNKNOWN")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+			|top limit=10 user tclass</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Data Exfiltration Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="Data Exfiltration")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Malware Download Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="MalwareDownload")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Malware C2 Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="MalwareC2")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Exploit Kit Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="ExploitKit")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Phishing Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="Phishing")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top DGA Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="*DGA*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top APT Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="APT")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Cryptocurrency Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="Cryptocurrency")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=20 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Bot Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="Bot")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Proxy Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="Proxy")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Compromised Host Activities</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass="Compromise*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP/Name"
+            | top limit=100 "Client IP/Name", user, "Domain name", "Threat class", "Threat property", severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="rowNumbers">true</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+  </row>
+</form>

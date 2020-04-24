@@ -1,0 +1,833 @@
+<form script="atc_security.js" stylesheet="atc_security.css" theme="light">
+  <label>Security Hits</label>
+   <description>This dashboard allows to filter security hits by either selecting filters or drilling down on any statistic table. To investigate an IOC, click on it in filtered hits to open a dossier search in csp.</description>
+  <fieldset submitButton="true" autoRun="true">
+    <input type="time" token="time">
+      <label>Time</label>
+      <default>
+        <earliest>-1d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="multiselect" token="source">
+      <label>Source</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by source</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>source</fieldForLabel>
+      <fieldForValue>source</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>source="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="category">
+      <label>Category</label>
+      <choice value="*&quot; OR &quot;*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by category</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>category</fieldForLabel>
+      <fieldForValue>category</fieldForValue>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>category="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+      <default>"*"" OR ""*"</default>
+      <initialValue>"*"" OR ""*"</initialValue>
+    </input>
+    <input type="multiselect" token="tclass">
+      <label>Threat class</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by tclass</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>tclass</fieldForLabel>
+      <fieldForValue>tclass</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>tclass="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="tproperty">
+      <label>Threat property</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by tproperty</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>tproperty</fieldForLabel>
+      <fieldForValue>tproperty</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>tproperty="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="text" token="query">
+      <label>Domain Name (e.g. www.c2.se)</label>
+      <default>All</default>
+      <change>
+        <condition value="All">
+          <set token="query_str">
+            <![CDATA[ ]]>
+          </set>
+        </condition>
+        <condition value="*">
+          <set token="query_str">(qname=$value$*)</set>
+        </condition>
+      </change>
+    </input>
+    <input type="multiselect" token="qtype">
+      <label>Query type</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by qtype</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>Query type</fieldForLabel>
+      <fieldForValue>qtype</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>qtype="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="text" token="src_ip">
+      <label>Device (e.g. 192.168.1.2)</label>
+      <default>All</default>
+      <change>
+        <condition value="All">
+          <set token="src_ip_str">
+            <![CDATA[ ]]>
+          </set>
+        </condition>
+        <condition value="*">
+          <set token="src_ip_str">(device=$value$)</set>
+        </condition>
+      </change>
+    </input>
+    <input type="multiselect" token="network">
+      <label>Network</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by network</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>Network</fieldForLabel>
+      <fieldForValue>network</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>network="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="text" token="user">
+      <label>User (e.g. cliu)</label>
+      <default>All</default>
+      <change>
+        <condition value="All">
+          <set token="user_str">
+            <![CDATA[ ]]>
+          </set>
+        </condition>
+        <condition value="*">
+          <set token="user_str">(user=$value$)</set>
+        </condition>
+      </change>
+    </input>
+    <input type="multiselect" token="rcode">
+      <label>Response Code</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by rcode</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>Response Code</fieldForLabel>
+      <fieldForValue>rcode</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>rcode="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="severity">
+      <label>Severity</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by severity</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>Severity</fieldForLabel>
+      <fieldForValue>severity</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>severity="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="confidence">
+      <label>Confidence</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by confidence</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>Confidence</fieldForLabel>
+      <fieldForValue>confidence</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>confidence="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="policy_name">
+      <label>Policy Name</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by policy_name</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>Policy Name</fieldForLabel>
+      <fieldForValue>policy_name</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>policy_name="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="feed_name">
+      <label>Feed Name</label>
+      <choice value="*">All</choice>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by feed_name</query>
+        <earliest>$time.earliest$</earliest>
+        <latest>$time.latest$</latest>
+      </search>
+      <fieldForLabel>Feed Name</fieldForLabel>
+      <fieldForValue>feed_name</fieldForValue>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>feed_name="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+    </input>
+    <input type="multiselect" token="country" searchWhenChanged="true">
+      <label>Country</label>
+      <choice value="*">All</choice>
+      <default>*</default>
+      <prefix>(</prefix>
+      <suffix>)</suffix>
+      <valuePrefix>country="</valuePrefix>
+      <valueSuffix>"</valueSuffix>
+      <delimiter> OR </delimiter>
+      <fieldForLabel>Country</fieldForLabel>
+      <fieldForValue>country</fieldForValue>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by country</query>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </search>
+    </input>
+    <input type="radio" token="feed_name">
+      <label>Reputation And / Or Behavioral</label>
+      <choice value="*">Both</choice>
+      <choice value="feed_name = Threat* OR feed_name = CUSTOM">Behavioral</choice>
+      <choice value="feed_name != Threat* AND feed_name !=CUSTOM">Reputation</choice>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Filtered Hits</title>
+      <single>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$
+			|stats count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Filtered hits over time</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$
+            | timechart count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Filtered Logs</title>
+      <table id="filtered_logs">
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$
+            | rex field=qname "(?&lt;qname&gt;.*)\.$"
+            | eval threat_indicator=case(threat_indicator=="" OR threat_indicator=="CUSTOM",qname,true(),threat_indicator)
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rcode as "Response code", rdata as "Response data", qtype as "Query type", policy_name as "Policy name", feed_name as "Feed name"
+            | table _time, "Threat class", "Threat property", "Domain name", threat_indicator,"Query type",device, user, country, "Response code", "Response data", severity, confidence, "Policy name", "Feed name"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">preview</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <drilldown>
+          <link target="_blank">https://csp.infoblox.com/atlas/app/dossier/research/dossier/search?indicator=$row.threat_indicator$</link>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Client</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$  
+            | rename device as "Client IP"
+            | top limit=200 "Client IP"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="src_ip_str">device="$click.value$"</set>
+          <set token="form.src_ip">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top User</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$ 
+			| top limit=200 user</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="user">user="$click.value$"</set>
+          <set token="form.user">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Domain name</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$ 
+            | rex field=qname "(?&lt;qname&gt;.*)\.$"
+            | rename qname as "Domain name"
+            | top limit=200 "Domain name"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="totalsRow">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="query_str">qname="$click.value$"</set>
+          <set token="form.query">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Query type</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$
+            | rename qtype as "Query type" 
+            | top limit=200 "Query type"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="qtype">qtype="$click.value$"</set>
+          <set token="form.qtype">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Threat property</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$
+            | rename tproperty as "Threat property" 
+            | top limit=200 "Threat property"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="tproperty">tproperty="$click.value$"</set>
+          <set token="form.tproperty">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Threat class</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$
+            | rename tclass as "Threat class"
+            | top limit=200 "Threat class"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="tclass">tclass="$click.value$"</set>
+          <set token="form.tclass">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Policy Name</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$  
+			| rename policy_name as "Policy Name" 
+            | top limit=200 "Policy Name"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="policy_name">policy_name="$click.value$"</set>
+          <set token="form.policy_name">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Feed Name</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$  
+			| rename feed_name as "Feed Name" 
+            | top limit=200 "Feed Name"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="feed_name">feed_name="$click.value$"</set>
+          <set token="form.feed_name">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Country</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$ 
+            | top limit=200 country</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="country">country="$click.value$"</set>
+          <set token="form.country">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Response Code</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$   
+            | rename rcode as "Response code"| top limit=200 "Response code"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">20</option>
+        <option name="drilldown">cell</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+        <drilldown>
+          <set token="rcode">rcode="$click.value$"</set>
+          <set token="form.rcode">$click.value$</set>
+        </drilldown>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Severity</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$  
+            | top limit=200 severity</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Confidence</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event
+            $category$
+            $source$
+            $tclass$
+            $tproperty$
+            $query_str$
+            $qtype$
+            $src_ip_str$
+            $network$
+            $user_str$
+            $country$
+            $rcode$
+            $severity$
+            $confidence$ 
+            $policy_name$
+            $feed_name$  
+            | top limit=200 confidence</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+  </row>
+</form>

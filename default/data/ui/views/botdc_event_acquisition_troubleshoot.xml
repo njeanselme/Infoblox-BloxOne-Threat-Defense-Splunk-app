@@ -1,0 +1,49 @@
+<dashboard>
+  <label>Security Hits Acquisition Log</label>
+  <row>
+    <panel>
+      <title>Last Acquisitions</title>
+      <table>
+        <search>
+          <query>index=_internal source="*ta_infoblox_botdc_security_hits.log" t0_timestamp t0_human t1_timestamp t1_human now_timestamp now_human | dedup _time | table _time t0_timestamp t0_human t1_timestamp t1_human now_timestamp now_human</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Event Batch Files</title>
+      <table>
+        <search>
+          <query>index=_internal source=*ta_infoblox_botdc_security_hits.log infoblox:api | table _time input object_count</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Event Batch Files Over Time</title>
+      <chart>
+        <search>
+          <query>index=_internal source=*ta_infoblox_botdc_security_hits.log infoblox:api | timechart sum(object_count) by input</query>
+          <earliest>-24h@h</earliest>
+          <latest>now</latest>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">line</option>
+        <option name="charting.chart.nullValueMode">zero</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+</dashboard>

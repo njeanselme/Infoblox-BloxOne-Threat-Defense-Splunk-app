@@ -1,0 +1,463 @@
+<form>
+  <label>Executive Summary Report</label>
+  <description>BloxOne Threat Defense examines DNS queries/responses and the DNS communication channel (UDP53). Using purpose built threat intelligence, Infoblox detects, contains and mitigates malware, enforces content and security policy, and provides an authoritative record of network transactions. Using DNS behavioral models (ThreatInsight), BloxOne detects and stops misuse of the DNS communication channel to tunnel applications, exfiltrate data, impersonate your domain and run sophisticated malware.</description>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label>Time Period</label>
+      <default>
+        <earliest>-1d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="source" searchWhenChanged="true">
+      <label>Source</label>
+      <choice value="*">All</choice>
+      <prefix>(source="</prefix>
+      <suffix>")</suffix>
+      <fieldForLabel>source</fieldForLabel>
+      <fieldForValue>source</fieldForValue>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by source</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title>Threat Intelligence Hits</title>
+      <single>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+			|stats count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="height">286</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x53a051","0x0877a6","0xf8be34","0xf1813f","0xdc4e41"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="underLabel">Malicious Hits Detected</option>
+        <option name="unitPosition">after</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Top Threat Classes</title>
+      <viz type="treemap_app.treemap">
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | rename tclass as "Threat class"
+            | top limit=20 "Threat class"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="height">311</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="treemap_app.treemap.colorMode">categorical</option>
+        <option name="treemap_app.treemap.maxCategories">10</option>
+        <option name="treemap_app.treemap.maxColor">#3fc77a</option>
+        <option name="treemap_app.treemap.minColor">#d93f3c</option>
+        <option name="treemap_app.treemap.numOfBins">6</option>
+        <option name="treemap_app.treemap.showLabels">true</option>
+        <option name="treemap_app.treemap.showLegend">true</option>
+        <option name="treemap_app.treemap.showTooltip">true</option>
+        <option name="treemap_app.treemap.useColors">true</option>
+        <option name="treemap_app.treemap.useZoom">true</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Threat Intelligence Matches Over Time</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")
+            | timechart count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">minmax</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">202</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">large</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Reported Devices</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")   
+            | rename device as "Client IP/Name"
+            | top limit=10 "Client IP/Name"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="height">297</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.size">small</option>
+        <option name="trellis.splitBy">_aggregation</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")   
+            | rename device as "Client IP/Name"
+            | top limit=10 "Client IP/Name"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">14</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+        <format type="number" field="percent"></format>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Reported Users</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (user!="UNKNOWN")
+            (feed_name!="CAT*")    
+			| top limit=10 user</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">316</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")  
+            (user!="UNKNOWN")
+			| top limit=10 user</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">heatmap</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Recent Malicious Activity</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (tclass!="CUSTOM") AND (tclass!="Policy") AND (tclass!=null) AND (tclass!="UNKNOWN") AND (tclass!="Uncat*")
+            (tproperty="*")
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (severity="*")
+            (confidence="*") 
+            (policy_name="*")
+            (feed_name!="CAT*")        
+            | rex field=qname "(?&lt;qname&gt;.*)\.$$"
+            | rename tclass as "Threat class", tproperty as "Threat property", qname as "Domain name", rdata as "Response data", feed_name as "Feed name", device as "Client IP", , rcode as "Response code"
+            | table _time, "Client IP", user, "Domain name", "Threat class", "Threat property", severity, "Response code" 
+|  sort -_time</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="rowNumbers">true</option>
+        <format type="color" field="severity">
+          <colorPalette type="map">{"HIGH":#AF575A,"MEDIUM":#F8BE34,"LOW":#B6C75A}</colorPalette>
+        </format>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Category Matches</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (qname=*)
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (policy_name="*")
+            (feed_name="CAT*")
+			| rename feed_name as "Domain Category" 
+            | top limit=10 "Domain Category"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="height">251</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+    <panel>
+      <title>Top Category Violations</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event $source$
+            (qname=*)
+            (qtype="*")
+            (network="*")
+            (country="*")
+            (rcode="*")
+            (policy_name="*")
+            (feed_name="CAT*Porn*") OR (feed_name="CAT*Nudity*") OR (feed_name="CAT*Illegal*") OR (feed_name="CAT*Parked*") OR (feed_name="CAT*Malicious*") OR (feed_name="CAT*Anonymiz*") OR (feed_name="CAT*Job*") OR (feed_name="CAT*Weapon*")
+			| rename feed_name as "Domain Category" 
+            | top limit=10 "Domain Category"</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.abbreviation">none</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.abbreviation">none</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.abbreviation">none</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">none</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.mode">standard</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="charting.lineWidth">2</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </chart>
+    </panel>
+  </row>
+</form>

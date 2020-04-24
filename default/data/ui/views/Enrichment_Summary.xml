@@ -1,0 +1,244 @@
+<form>
+  <label>Major enriched security hits</label>
+  <description>This report allows to focus on the most severe hits based on threat intelligence context gathered using Dossier searches</description>
+  <fieldset submitButton="false" autoRun="false">
+    <input type="time" token="time" searchWhenChanged="true">
+      <label>Time Period</label>
+      <default>
+        <earliest>-1d@d</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+    <input type="dropdown" token="source" searchWhenChanged="true">
+      <label>Source</label>
+      <choice value="*">All</choice>
+      <prefix>(source="</prefix>
+      <suffix>")</suffix>
+      <fieldForLabel>source</fieldForLabel>
+      <fieldForValue>source</fieldForValue>
+      <search>
+        <query>eventtype= infoblox_dns_event
+               | stats count by source</query>
+        <earliest>0</earliest>
+        <latest></latest>
+      </search>
+      <default>*</default>
+      <initialValue>*</initialValue>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <chart>
+        <title>Critical Hits over time</title>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype=infoblox_threat_intelligence_context extended.risk_score.rating=Critical OR risk_score_rating=Critical OR extended.threat_score.rating=Critical OR threat_score_rating=Critical | dedup threat_indicator | table threat_indicator] | timechart count by device</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Critical Hits</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype=infoblox_threat_intelligence_context extended.risk_score.rating=Critical OR risk_score_rating=Critical OR extended.threat_score.rating=Critical OR threat_score_rating=Critical | dedup threat_indicator | table threat_indicator] | stats count by threat_indicator | sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Critical hits by Device</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype=infoblox_threat_intelligence_context extended.risk_score.rating=Critical OR risk_score_rating=Critical OR extended.threat_score.rating=Critical OR threat_score_rating=Critical | dedup threat_indicator | table threat_indicator] | stats count by device | sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Critical hits by Device</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype=infoblox_threat_intelligence_context extended.risk_score.rating=Critical OR risk_score_rating=Critical OR extended.threat_score.rating=Critical OR threat_score_rating=Critical | dedup threat_indicator | table threat_indicator] | top limit=20 device threat_indicator</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Threat Lanscapes Hit over time</title>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* | dedup threat_indicator | table threat_indicator] 
+| join threat_indicator [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* ] 
+| timechart count by device</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Threat Landscapes</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* | dedup threat_indicator | table threat_indicator] 
+| join threat_indicator [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* ] 
+| rename extended.threatscape as "Threat Landscape" 
+| top limit=20 "Threat Landscape" threat_indicator</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <format type="number" field="percent">
+          <option name="precision">0</option>
+          <option name="useThousandSeparators">false</option>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Threat Landscape by Device</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* | dedup threat_indicator | table threat_indicator] 
+| join threat_indicator [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* ] 
+| rename extended.threatscape as "Threat Landscape" 
+| top limit=20 "Threat Landscape" device</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Threat Landscape by Device</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* | dedup threat_indicator | table threat_indicator] 
+| join threat_indicator [search earliest=-10y  eventtype=infoblox_threat_intelligence_context extended.threatscape=* ] 
+| rename extended.threatscape as threatscape
+| eval threat_indicator_desc = threatscape + " - " + threat_indicator
+| top limit=20 device threat_indicator_desc</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Hits to IOCs confirmed by at least 3 Antivirus Vendors</title>
+      <chart>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype= infoblox_threat_intelligence_context source=malware_analysis positives &gt; 3
+          | dedup threat_indicator | table threat_indicator] | timechart count by device</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="charting.chart">line</option>
+        <option name="charting.drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Top Hits to IOCs confirmed by at least 3 Antivirus Vendors</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype= infoblox_threat_intelligence_context source=malware_analysis positives &gt; 3
+          | dedup threat_indicator | table threat_indicator] | stats count by threat_indicator | sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="count">10</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">none</option>
+        <option name="percentagesRow">false</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="rowNumbers">false</option>
+        <option name="totalsRow">false</option>
+        <option name="wrap">true</option>
+        <format type="color" field="count">
+          <colorPalette type="minMidMax" maxColor="#D6563C" minColor="#FFFFFF"></colorPalette>
+          <scale type="minMidMax"></scale>
+        </format>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Hits to IOCs confirmed by at least 3 Antivirus Vendors by Device</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype= infoblox_threat_intelligence_context source=malware_analysis positives &gt; 3
+          | dedup threat_indicator | table threat_indicator] | stats count by device | sort - count</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+    <panel>
+      <title>Top Hits to IOCs confirmed by at least 3 Antivirus Vendors by Device</title>
+      <viz type="sankey_diagram_app.sankey_diagram">
+        <search>
+          <query>eventtype= infoblox_dns_event (source="*") [search earliest=-10y eventtype= infoblox_threat_intelligence_context source=malware_analysis positives &gt; 3
+          | dedup threat_indicator | table threat_indicator] | top limit=20 device threat_indicator</query>
+          <earliest>$time.earliest$</earliest>
+          <latest>$time.latest$</latest>
+          <sampleRatio>1</sampleRatio>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+        <option name="trellis.enabled">0</option>
+        <option name="trellis.scales.shared">1</option>
+        <option name="trellis.size">medium</option>
+      </viz>
+    </panel>
+  </row>
+</form>

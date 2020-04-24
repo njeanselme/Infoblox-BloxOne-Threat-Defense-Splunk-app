@@ -1,0 +1,91 @@
+<form>
+  <label>Threat Indicator Lookup and enrichment status</label>
+  <fieldset submitButton="false" autoRun="true">
+    <input type="time" token="field1">
+      <label></label>
+      <default>
+        <earliest>-24h@h</earliest>
+        <latest>now</latest>
+      </default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <title># Distinct Threat Indicators from logs</title>
+      <single>
+        <search>
+          <query>eventtype= infoblox_dns_event
+			|stats distinct_count(threat_indicator)</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Distinct Threat Indicators from logs</title>
+      <table>
+        <search>
+          <query>eventtype= infoblox_dns_event (category="") NOT (tclass="CUSTOM" OR tclass="UNKNOWN" OR tclass="Bogon") NOT (threat_indicator="CUSTOM" OR threat_indicator="") |stats count,min(event_time) as event_time by threat_indicator,feed_type | sort - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title># Distinct threat indicators Populated Lookup table</title>
+      <single>
+        <search>
+          <query>|inputlookup botdc_distinct_threat_indicators | stats count by threat_indicator | stats count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Distinct threat indicators Populated Lookup table</title>
+      <table>
+        <search>
+          <query>|inputlookup botdc_distinct_threat_indicators | stats sum(count) as count, min(event_time) as first_time_seen by threat_indicator, feed_type | sort - count</query>
+          <earliest>$field1.earliest$</earliest>
+          <latest>$field1.latest$</latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Enriched Threat Indicators</title>
+      <single>
+        <search>
+          <query>eventtype=infoblox_threat_intelligence_context | stats distinct_count(threat_indicator)</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </single>
+    </panel>
+    <panel>
+      <title>Distinct enriched threat indicators</title>
+      <table>
+        <search>
+          <query>eventtype=infoblox_threat_intelligence_context | dedup threat_indicator | table threat_indicator threat_indicator_type</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="count">10</option>
+        <option name="drilldown">none</option>
+        <option name="refresh.display">progressbar</option>
+      </table>
+    </panel>
+  </row>
+</form>

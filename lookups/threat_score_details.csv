@@ -1,0 +1,39 @@
+﻿Metric,Metric_Value,Metric_Detailed,Metric_Short,Metric_Code,Metric_Value_Code,Description
+Attack Vector,Network,Attack Vector:Network,AV:N,AV,N,"The attack vector describes the delivery method of an attack to the target victim. For example, a cyber criminal can carry out a malicious attack remotely or locally in order to compromise the target. An attack that can be sent by network usually means a higher number of attacks and potential victims, and will therefore be assigned a higher score."
+Attack Vector,Adjacent,Attack Vector:Adjacent,AV:A,AV,A,
+Attack Vector,Local,Attack Vector:Local,AV:L,AV,L,
+Attack Vector,Physical,Attack Vector:Physical,AV:P,AV,P,
+Attack Complexity,Low,Attack Complexity:Low,AC:L,AC,L,"This metric represents the circumstances that must exist for an attacker to successfully compromise the target. Such circumstances may be possible only through a great deal of reconnaissance efforts, the presence of specific systems and configuration settings, or current employment of personnel that are of interest. If the circumstances are less sophisticated, there is a higher probability of success due to less obstacles to be overcome by the attacker, and therefore will be assigned a higher score."
+Attack Complexity,High,Attack Complexity:High,AC:H,AC,H,
+Privilege Required,None,Privilege Required:None,PR:N,PR,N,"This metric describes the level of system privileges required to successfully compromise the target. An attack that requires no privileges will get the highest score for this metric."
+Privilege Required,Low,Privilege Required:Low,PR:L,PR,L,
+Privilege Required,High,Privilege Required:High,PR:H,PR,H,
+User Interaction,None,User Interaction:None,UI:N,UI,N,"User Interaction is a binary metric that describes whether the attack requires participation from the user to successfully compromise the system. This interaction occurs, for example, when a user must turn on certain features of a desktop application for the malware to execute. The score for this metric is greater when no user interaction is required."
+User Interaction,Required,User Interaction:Required,UI:R,UI,R,
+Propagation,Un-changed,Propagation:Un-changed,P:F,P,F,"Propagation in the TSS refers to the ability to spread from one device to another without participation from the user or victim. A malware or attack that can replicate itself and spread across storage devices, multi-user file servers, USB drives and other means is an example of propagation. A malware that propagates is more dangerous than one that does not and thus will be assigned a higher score."
+Propagation,changed,Propagation:changed,P:T,P,T,
+Exfiltration,None,Exfiltration:None,E:N,E,N,"Exfiltration refers to the action of stealing credentials and private information following a successful compromise of the target. This metric is the highest when exfiltration is high."
+Exfiltration,Low,Exfiltration:Low,E:L,E,L,
+Exfiltration,High,Exfiltration:High,E:H,E,H,
+Modification,None,Modification:None,M:N,M,N,"Modification occurs when the attacker or malware alters the form of systems or components of the target"
+Modification,Low,Modification:Low,M:L,M,L,
+Modification,High,Modification:High,M:H,M,H,
+Availability,None,Availability:None,A:N,A,N,"This metric describes impact to the running status of services on the compromised system. Availability is given a high score if the impacts on the services are great. Most ransomware families will have a high availability rating due because they usually lock files that disrupt services, rendering them useless."
+Availability,Low,Availability:Low,A:L,A,L,
+Availability,High,Availability:High,A:H,A,H,
+Country Inference,None,Country Inference:None,CI:N,CI,N,"TSS will generate a higher score if the indicator is hosted in a country that is considered risky due to its poor reputation. A country is considered risky if it has a history of servicing many IPs abused by malware, relative to the total number of IPs delegated to that country."
+Country Inference,Low,Country Inference:Low,CI:L,CI,L,
+Country Inference,Medium,Country Inference:Medium,CI:M,CI,M,
+Country Inference,High,Country Inference:High,CI:H,CI,H,
+ASN Inference,None,ASN Inference:None,AI:N,AI,N,"ASN inference measures the risk level of the ASO associated with the indicator. ASOs are high risk if they support a high number of abused IPs in proportion to their overall number of delegated IPs. ASOs that allow malicious activity to thrive in their environment tend to respond slowly to abuse reports. Malware that survive longer by maintaining their IPs will inflict more damage to victim environments."
+ASN Inference,Low,ASN Inference:Low,AI:L,AI,L,
+ASN Inference,Medium,ASN Inference:Medium,AI:M,AI,M,
+ASN Inference,High,ASN Inference:High,AI:H,AI,H,
+TLD Inference,None,TLD Inference:None,TI:N,TI,N,"Similar to the other inference factors, a TLD is considered risky if it is abused heavily in proportion to the number of domains registered with that TLD. Some TLDs are widely abused because the administrating registry operator provides anonymization services that criminals favor."
+TLD Inference,Low,TLD Inference:Low,TI:L,TI,L,
+TLD Inference,Medium,TLD Inference:Medium,TI:M,TI,M,
+TLD Inference,High,TLD Inference:High,TI:H,TI,H,
+Degree of Penalization,None,Degree of Penalization:None,DOP:N,DOP,N,"This metric represents the number of reputable security vendors that have recognized the indicator as a threat. The higher the volume of indictments, the higher the degree of penalization (DOP) score."
+Degree of Penalization,Low,Degree of Penalization:Low,DOP:L,DOP,L,
+Degree of Penalization,Medium,Degree of Penalization:Medium,DOP:M,DOP,M,
+Degree of Penalization,High,Degree of Penalization:High,DOP:H,DOP,H,
